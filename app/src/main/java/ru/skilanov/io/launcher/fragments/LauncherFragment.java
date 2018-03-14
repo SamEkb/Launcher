@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -86,6 +88,7 @@ public class LauncherFragment extends Fragment {
     private class ActivityHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ResolveInfo mResolvedInfo;
         private TextView mApplicationNameTextView;
+        private ImageView mIconImageView;
 
         /**
          * Конструктор.
@@ -94,8 +97,9 @@ public class LauncherFragment extends Fragment {
          */
         public ActivityHolder(View itemView) {
             super(itemView);
-            mApplicationNameTextView = (TextView) itemView;
-            mApplicationNameTextView.setOnClickListener(this);
+            itemView.setOnClickListener(this);
+            mApplicationNameTextView = itemView.findViewById(android.R.id.text1);
+            mIconImageView = itemView.findViewById(android.R.id.icon);
         }
 
         /**
@@ -106,8 +110,12 @@ public class LauncherFragment extends Fragment {
         public void bind(ResolveInfo resolveInfo) {
             mResolvedInfo = resolveInfo;
             PackageManager packageManager = getActivity().getPackageManager();
+
             String applicationName = mResolvedInfo.loadLabel(packageManager).toString();
+            Drawable appIcon = mResolvedInfo.loadIcon(packageManager);
+
             mApplicationNameTextView.setText(applicationName);
+            mIconImageView.setImageDrawable(appIcon);
         }
 
         /**
@@ -120,8 +128,11 @@ public class LauncherFragment extends Fragment {
         @Override
         public void onClick(View v) {
             ActivityInfo activityInfo = mResolvedInfo.activityInfo;
-            Intent intent = new Intent(Intent.ACTION_MAIN).setClassName(activityInfo.applicationInfo
-                    .packageName, activityInfo.name).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            Intent intent = new Intent(Intent.ACTION_MAIN)
+                    .setClassName(activityInfo.applicationInfo.packageName, activityInfo.name)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
             startActivity(intent);
         }
     }
@@ -150,8 +161,8 @@ public class LauncherFragment extends Fragment {
          */
         @Override
         public ActivityHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            View view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            View view = inflater.inflate(android.R.layout.activity_list_item, parent, false);
             return new ActivityHolder(view);
         }
 
