@@ -49,8 +49,11 @@ public class LauncherFragment extends Fragment {
     }
 
     /**
-     * Создаем иетнет и получаем список интентов лаунчеров и сортируем их в алфавитном порядке,
-     * затем задаем адаптер для recycler view.
+     * Создаем иетнет и получаем список(в фильтры интентов котрых включены
+     * действие MAIN и категория LAUNCHER) и сортируем их в алфавитном порядке.
+     * List<ResolveInfo> queryIntentActivities - возвращает список активностей, соответствующих
+     * заданному Intent.
+     * Задаем адаптер для recycler view.
      */
     private void setupAdapter() {
         Intent startupIntent = new Intent(Intent.ACTION_MAIN);
@@ -96,7 +99,7 @@ public class LauncherFragment extends Fragment {
         }
 
         /**
-         * Метод связывания.
+         * Метод где mApplicationNameTextView задается имя активности из списка packageManager.
          *
          * @param resolveInfo ResolveInfo
          */
@@ -109,7 +112,8 @@ public class LauncherFragment extends Fragment {
 
         /**
          * Метод клика по позиции item в recycler view. Мы задаем в явном интенте имя пакета
-         * и имя активности для ее запуска.
+         * и имя активности для ее запуска. Также добавляем флаг, чтобы активность запускалась
+         * в отдельной задаче.
          *
          * @param v View
          */
@@ -117,7 +121,7 @@ public class LauncherFragment extends Fragment {
         public void onClick(View v) {
             ActivityInfo activityInfo = mResolvedInfo.activityInfo;
             Intent intent = new Intent(Intent.ACTION_MAIN).setClassName(activityInfo.applicationInfo
-                    .packageName, activityInfo.name);
+                    .packageName, activityInfo.name).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
     }
